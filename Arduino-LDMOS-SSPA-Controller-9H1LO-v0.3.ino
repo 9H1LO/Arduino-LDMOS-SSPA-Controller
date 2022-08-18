@@ -118,7 +118,7 @@ int graph_Swr = 0;
 int operate = 0;
 int civ_auto = 0;
 
-int graph_maxWatt = 600; //Scale from 0 to 600, set as per your SSPA board
+int graph_maxWatt = 999; //Scale from 0 to 600, set as per your SSPA board
 int graph_maxTemp = 60; //Scale from 0 to 55, set as per your PA board.
 int graph_maxSwr = 2; // Scale of the SWR for display
 int VdelayInMillis = 1000; // refresh V display every N mili sec, set as per your liking
@@ -247,6 +247,7 @@ void read_volt() {
   int v1_val = 0;
   int V = 0;
   v1_val = analogRead(VCC);
+ 
   Vout = (v1_val * 5.00) / 1024.00;
   Vin = Vout / (Res_2 / (Res_1 + Res_2));
   V = ((Vin * 10) + 0.5);
@@ -277,7 +278,17 @@ void read_volt() {
     myNex.writeNum("Cv.val", V);
     myNex.writeNum("Gv.val", (V/10));
     lastVRequest = millis();
+    
+  #ifdef DEBUG
+  Serial1.print("VCC - Raw: ");
+  Serial1.print(v1_val);
+  Serial1.print(" Disp: ");
+  Serial1.println((V/10));  
+  #endif
   }
+
+  
+  
 }
 
 /* === Over temp protection and show/clear temp error=== */
@@ -310,6 +321,10 @@ void alarm(bool alarm){
     myNex.writeNum("bt1.pco", 33808); 
     buzzer(0);
 }
+  #ifdef DEBUG
+  Serial1.print("Alarm: ");
+  Serial1.println(alarm);
+  #endif
 }
 
 /* === Tempareturn Monitor  === */
